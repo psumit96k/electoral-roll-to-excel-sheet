@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     OCR_USE_DOC_UNWARPING: bool = False
     OCR_USE_TEXTLINE_ORIENTATION: bool = False
     OCR_ENABLE_MKLDNN: bool = False
+    OCR_DEVICE: str = "cpu"  # cpu, gpu, auto
 
     # Job processing
     MAX_WORKERS: int = 4

@@ -1,5 +1,5 @@
 """
-OCR service using PaddleOCR.
+OCR service using PaddleOCR with CPU/GPU selection.
 """
 import cv2
 import numpy as np
@@ -15,28 +15,119 @@ logger = logging.getLogger(__name__)
 
 class OCRService:
     """
-    Service for performing OCR using PaddleOCR.
+    Service for performing OCR using PaddleOCR with configurable device selection.
     """
 
-    def __init__(self):
-        """Initialize the OCR service with PaddleOCR."""
+    def __init__(self, settings=None):
+        """Initialize the OCR service with PaddleOCR.
+
+        Args:
+            settings: Optional settings object. If not provided, uses the global settings.
+        """
         self.ocr = None
+        if settings is None:
+            from app.config.settings import settings
+            self.settings = settings
+        else:
+            self.settings = settings
         self._initialize_ocr()
 
     def _initialize_ocr(self):
-        """Initialize PaddleOCR with configured parameters."""
+        """Initialize PaddleOCR with configured parameters and device selection."""
         try:
-            self.ocr = PaddleOCR(
-                use_doc_orientation_classify=settings.OCR_USE_DOC_ORIENTATION_CLASSIFY,
-                use_doc_unwarping=settings.OCR_USE_DOC_UNWARPING,
-                use_textline_orientation=settings.OCR_USE_TEXTLINE_ORIENTATION,
-                lang=settings.OCR_LANG,
-                enable_mkldnn=settings.OCR_ENABLE_MKLDNN
-            )
-            logger.info("PaddleOCR initialized successfully")
+            # Resolve device based on OCR_DEVICE setting
+            device = self._resolve_ocr_device()
+
+            # Prepare PaddleOCR parameters
+            paddleocr_params = {
+                "use_doc_orientation_classify": self.settings.OCR_USE_DOC_ORIENTATION_CLASSIFY,
+                "use_doc_unwarping": self.settings.OCR_USE_DOC_UNWARPING,
+                "use_textline_orientation": self.settings.OCR_USE_TEXTLINE_ORIENTATION,
+                "lang": self.settings.OCR_LANG,
+                "enable_mkldnn": self.settings.OCR_ENABLE_MKLDNN
+            }
+
+            # Add device parameter if specified (not None)
+            if device is not None:
+                paddleocr_params["device"] = device
+
+            self.ocr = PaddleOCR(**paddleocr_params)
+            logger.info(f"PaddleOCR initialized successfully on device: {device or 'default'}")
         except Exception as e:
             logger.error(f"Failed to initialize PaddleOCR: {e}")
             raise
+
+    def _resolve_ocr_device(self) -> Optional[str]:
+        """
+        Resolve the OCR device based on settings.
+
+        Returns:
+            Device string for PaddleOCR (e.g., 'cpu', 'gpu:0') or None for default
+
+        Raises:
+            ValueError: If OCR_DEVICE setting is invalid
+            RuntimeError: If GPU is requested but not available
+        """
+        device_setting = self.settings.OCR_DEVICE.lower()
+
+        # Validate device setting
+        if device_setting not in ("cpu", "gpu", "auto"):
+            raise ValueError(
+                f"Invalid OCR_DEVICE setting: '{self.settings.OCR_DEVICE}'. "
+                f"Must be one of: 'cpu', 'gpu', 'auto'"
+            )
+
+        # Log the requested mode
+        logger.info(f"OCR device setting requested: {device_setting}")
+
+        if device_setting == "cpu":
+            logger.info("Selected CPU device explicitly")
+            return "cpu"
+
+        elif device_setting == "gpu":
+            # Check if GPU is available
+            if self._is_gpu_available():
+                logger.info("Selected GPU device explicitly")
+                return "gpu:0"
+            else:
+                raise RuntimeError(
+                    "GPU requested for OCR but GPU is not available. "
+                    "Please ensure: "
+                    "1. CUDA-enabled PaddlePaddle is installed, "
+                    "2. CUDA drivers are available, "
+                    "3. At least one GPU is detected."
+                )
+
+        else:  # device_setting == "auto"
+            # Auto-select: use GPU if available, otherwise CPU
+            if self._is_gpu_available():
+                logger.info("Auto-selected GPU device (CUDA and GPU available)")
+                return "gpu:0"
+            else:
+                logger.info("Auto-selected CPU device (GPU not available)")
+                return "cpu"
+
+    def _is_gpu_available(self) -> bool:
+        """
+        Check if GPU is available for PaddleOCR.
+
+        Returns:
+            True if GPU is available, False otherwise
+        """
+        try:
+            import paddle
+            # Check if PaddlePaddle was compiled with CUDA
+            if not paddle.is_compiled_with_cuda():
+                logger.debug("PaddlePaddle not compiled with CUDA")
+                return False
+
+            # Check GPU count
+            gpu_count = paddle.device.cuda.device_count()
+            logger.debug(f"CUDA is available with {gpu_count} GPU(s)")
+            return gpu_count > 0
+        except Exception as e:
+            logger.debug(f"Error checking GPU availability: {e}")
+            return False
 
     def preprocess_image(self, image: np.ndarray) -> np.ndarray:
         """
