@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election PDF to Excel Converter</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Election PDF to Excel Converter</h1>
+            <p>Convert electoral roll PDFs to Excel format with manual review</p>
+        </header>
+
+        <main>
+            <section class="upload-section">
+                <h2>Upload PDFs</h2>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="batchName">Batch Name (optional):</label>
+                        <input type="text" id="batchName" name="batchName" placeholder="Enter batch name">
+                    </div>
+                    <div class="form-group">
+                        <label for="pdfFiles">Select PDF Files:</label>
+                        <input type="file" id="pdfFiles" name="pdfFiles" accept=".pdf" multiple>
+                        <small>Maximum {{ config.MAX_FILE_SIZE_MB }}MB per file, {{ config.MAX_BATCH_PDFS }} files per batch</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload PDFs</button>
+                </form>
+                <div id="uploadResults"></div>
+            </section>
+
+            <section class="documents-section">
+                <h2>Uploaded Documents</h2>
+                <div id="documentsList">
+                    <!-- Document list will be populated here -->
+                </div>
+            </section>
+
+            <section class="review-section">
+                <h2>Review & Confirm</h2>
+                <div id="reviewInterface">
+                    <!-- Review interface will be loaded here -->
+                </div>
+            </section>
+
+            <section class="export-section">
+                <h2>Export to Excel</h2>
+                <div id="exportControls">
+                    <!-- Export controls will be populated here -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Election PDF to Excel Converter v0.1.0</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

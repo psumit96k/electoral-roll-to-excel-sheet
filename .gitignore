@@ -1,0 +1,20 @@
+
+# Local environment and generated files
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite
+*.sqlite3
+*.bak
+*.backup
+*.before_*.py
+diagnostic_output*/
+diagnostic_page*/
+graphify-out/
+samples/
+temp.txt
