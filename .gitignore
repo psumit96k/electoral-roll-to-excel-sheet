@@ -18,3 +18,5 @@ diagnostic_page*/
 graphify-out/
 samples/
 temp.txt
+
+.venv-*/
