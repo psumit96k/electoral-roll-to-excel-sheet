@@ -22,6 +22,7 @@ from app.ocr.service import ocr_service
 from app.parsing.geometry import geometry_parser
 from app.parsing.field_parser import FieldParser
 from app.database import SessionLocal
+from app.export.xlsx_generator import generate_excel_export
 
 logger = logging.getLogger(__name__)
 
@@ -190,6 +191,33 @@ class PDFProcessor:
             self.db_session.commit()
 
             logger.info(f"Document processing completed: {document_id}")
+
+            # Automatically export extracted voter records to Excel.
+            try:
+                export_filename = f"{Path(document.original_filename).stem}_export.xlsx"
+                export_path = settings.EXPORT_DIR / export_filename
+                settings.EXPORT_DIR.mkdir(parents=True, exist_ok=True)
+
+                export_result = generate_excel_export(
+                    document_ids=[document_id],
+                    output_path=str(export_path),
+                    include_unconfirmed=True
+                )
+
+                if export_result.get("success"):
+                    logger.info(
+                        f"Automatic Excel export created: {export_path} "
+                        f"({export_result.get('record_count', 0)} records)"
+                    )
+                else:
+                    logger.error(
+                        f"Automatic Excel export failed for document "
+                        f"{document_id}: {export_result.get('error', 'Unknown error')}"
+                    )
+            except Exception:
+                logger.exception(
+                    f"Automatic Excel export failed for document {document_id}"
+                )
 
             return {
                 "success": True,
