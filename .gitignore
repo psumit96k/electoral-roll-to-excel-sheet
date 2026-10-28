@@ -20,3 +20,9 @@ samples/
 temp.txt
 
 .venv-*/
+
+# Local generated data - do not upload
+/app/diagnostics/
+/app/exports/
+/app/uploads/
+/el7_export.xlsx
