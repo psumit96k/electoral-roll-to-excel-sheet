@@ -41,6 +41,10 @@ A local web application for converting electoral roll PDFs to Excel format with 
    ```powershell
    python -m pip install -r requirements.txt
    ```
+   - The `.venv-gpu` environment must be created locally; it is not included in the repository.
+- Create it using Python 3.12 with `py -3.12 -m venv .venv-gpu`.
+- Install project dependencies into the new environment using `.\.venv-gpu\Scripts\python.exe -m pip install -r requirements.txt`.
+- Installing project dependencies does not guarantee GPU acceleration. Verify that the installed PaddlePaddle package supports GPU inference and that CUDA/cuDNN dependencies are compatible.
 
    **Note:** GPU-enabled PaddlePaddle may require a compatible installation for your CUDA environment. Installing the dependencies alone does not guarantee that GPU inference will work.
 
