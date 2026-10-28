@@ -11,7 +11,7 @@ from pathlib import Path
 import hashlib
 import uuid
 
-from app.config import settings
+from app.config.settings import settings
 from app.models.database import Batch, Document
 from app.database import get_db
 
