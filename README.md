@@ -57,6 +57,21 @@ A local web application for converting electoral roll PDFs to Excel format with 
 
 6. Open your browser to `http://127.0.0.1:8000`.
 
+### Initialize the Database
+
+Before initializing the database, ensure the required `data` directory exists. The default SQLite database path is `data/election.db`.
+
+Run these commands in PowerShell from the project root directory:
+
+```powershell
+New-Item -ItemType Directory -Force -Path .\data
+python -c "from app.database import create_tables; create_tables()"
+```
+
+The first command creates the `data` directory if it does not already exist. The second command initializes the database tables.
+
+**Note:** The database and its extracted electoral-roll records are stored locally. Do not commit the database file or sensitive voter data to GitHub.
+
 ## Configuration
 
 Configuration is managed through environment variables or a `.env` file. See `app/config/settings.py` for available options.
