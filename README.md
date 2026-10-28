@@ -35,32 +35,30 @@ A local web application for converting electoral roll PDFs to Excel format with 
    ```
 
    If PowerShell blocks virtual environment activation, you can run the environment's Python executable directly.
-
-3. Install dependencies:
-
-   ```powershell
-   python -m pip install -r requirements.txt
-   ```
    - The `.venv-gpu` environment must be created locally; it is not included in the repository.
 - Create it using Python 3.12 with `py -3.12 -m venv .venv-gpu`.
 - Install project dependencies into the new environment using `.\.venv-gpu\Scripts\python.exe -m pip install -r requirements.txt`.
 - Installing project dependencies does not guarantee GPU acceleration. Verify that the installed PaddlePaddle package supports GPU inference and that CUDA/cuDNN dependencies are compatible.
 
-   **Note:** GPU-enabled PaddlePaddle may require a compatible installation for your CUDA environment. Installing the dependencies alone does not guarantee that GPU inference will work.
+4. Install dependencies:
 
-4. Initialize the database:
+   ```powershell
+   python -m pip install -r requirements.txt
+   ```
+
+5. Initialize the database:
 
    ```powershell
    New-Item -ItemType Directory -Force -Path .\data
    python -c "from app.database import create_tables; create_tables()"
    ```
 
-5. Run the application:
+6. Run the application:
    ```powershell
    python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
    ```
 
-6. Open your browser to `http://127.0.0.1:8000`.
+7. Open your browser to `http://127.0.0.1:8000`.
 
 ## Configuration
 
