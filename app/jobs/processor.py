@@ -112,7 +112,7 @@ class PDFProcessor:
 
             # Determine which pages to process
             if pages is None:
-                page_indices = range(total_pages)
+                page_indices = range(2, total_pages - 1)
             else:
                 # Check for empty list
                 if len(pages) == 0:
@@ -655,3 +655,4 @@ if __name__ == "__main__":
     else:
         print(f"Error: {result['message']}")
         sys.exit(1)
+
