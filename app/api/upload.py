@@ -11,7 +11,7 @@ from pathlib import Path
 import hashlib
 import uuid
 
-from app.config import settings
+from app.config.settings import settings
 from app.models.database import Batch, Document
 from app.database import get_db
 
@@ -98,7 +98,11 @@ async def upload_pdf(
     db.commit()
     db.refresh(document)
 
-    # TODO: Add background task for PDF processing (page count extraction, etc.)
+
+    # Start PDF processing in the background
+    from app.jobs.processor import process_document_background
+    background_tasks.add_task(process_document_background, document.id)
+
     # background_tasks.add_task(process_pdf_metadata, document.id)
 
     return {
