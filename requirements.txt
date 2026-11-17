@@ -1,14 +1,15 @@
 # Election PDF to Excel Converter
 # Python 3.12 recommended
 #
-# Install core dependencies:
+# Install application dependencies:
 #   python -m pip install -r requirements.txt
 #
-# GPU note:
-# PaddlePaddle GPU installation depends on your operating system,
-# CUDA version, and compatible PaddlePaddle release.
-# Follow the official PaddlePaddle installation guide before
-# changing the PaddlePaddle package in your working GPU environment.
+# GPU NOTE:
+# Install PaddlePaddle GPU separately using a compatible
+# package for your operating system and CUDA version.
+#
+# Do not install CPU and GPU PaddlePaddle packages together.
+# CPU/GPU/Auto selection is handled by the application.
 
 # Core API
 fastapi>=0.104.0
@@ -21,8 +22,9 @@ SQLAlchemy>=2.0.0
 alembic>=1.12.0
 
 # OCR
-paddleocr>=2.7.0.0
-paddlepaddle>=2.6.0
+paddleocr==3.7.0
+numpy>=2.3.5
+opencv-contrib-python>=4.10.0.84
 
 # PDF processing
 PyMuPDF>=1.24.0
@@ -37,3 +39,6 @@ httpx>=0.25.0
 
 # Environment configuration
 python-dotenv>=1.0.0
+pydantic>=2.14.3
+pydantic-settings>=2.16.3
+setuptools>=68.0.0
